@@ -1,7 +1,8 @@
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Button, Alert} from 'react-native';
 import { useState, React, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { getCursos } from '../service/CursoService'; 
+import { deletarCurso, getCursos } from '../service/CursoService'; 
+
 
 const HomeScreen = ({ navigation }) => {
   const [itens, setItens] = useState([]);
@@ -17,18 +18,30 @@ const HomeScreen = ({ navigation }) => {
     }, [])
   );
 
+  const confirmarExclusao = (id) => {
+    Alert.alert('Confirmar', 'Deseja realmente excluir este curso?', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Excluir', style: 'destructive', 
+        onPress: async () => {
+        await deletarCurso(id)
+         carregarCursos() 
+        } }
+    ]);
+  }
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.itemContainer} onPress={() => navigation.navigate('Details', {  /* curso: item*/ itemId: item.id, name: item.name, description: item.description })}>
       <Text style={styles.itemTitle}>{item.name}</Text>
       <Text style={styles.itemDescription}>{item.description}</Text>
+      <Button title='🗑️' onPress={() => confirmarExclusao(item.id)} color="#d9534f"  />
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>📚Cursos Disponíveis</Text>
+      <Button title='Adicionar Curso' onPress={() => navigation.navigate('CursoForm')} />
       <FlatList
-        data={itens}
+        data={itens} 
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: 20 }}
