@@ -10,8 +10,13 @@ export const getCursos = async () => {
 }
 
 // Adicionar um novo curso (C)
-export const adicionarCurso =  async (curso) => {
-    const docRef = await addDoc(cursosRef, curso)
+export const adicionarCurso =  async (curso, userId) => {
+    const docRef = await addDoc(cursosRef,
+        {
+            ...curso,
+            userId
+        }
+     )
     return docRef.id
 }
 
